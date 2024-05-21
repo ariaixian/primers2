@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Combined Content</title>
+    <style>
+        .page {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        button {
+            font-family: 'Gilmer';
+            border-radius: 50px;
+            font-size: 14px;
+            padding: 9px 10px;
+            background-color: #F7F5FF;
+            color: #000;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="content1" class="page active">
+        <p><!DOCTYPE html>
+            <html lang="en">
+            <style>
+                .sequence-container {
+                    display: monospace; /* Align items horizontally */
+                    font-family: monospace; /* Use a fixed-width font for alignment */
+                }
+            
+                .sequence-label {
+                    width: 150px; /* Adjust as needed */
+                    text-align: right;
+                    padding-right: 10px; /* Space between label and sequence */
+                }
+            
+                .sequence {
+                    white-space: pre; /* Preserve spaces and newlines */
+                }
+                @font-face {
+                    font-family: 'Plumpelo';
+                    src: url('/Users/maria/Desktop/primer_calculator/Plumpelo-Thin.otf') format('opentype');
+                    font-weight: normal;
+                    font-style: normal;
+                }
+                @font-face {
+                    font-family: 'Gilmer';
+                    src: url('/Users/maria/Desktop/primer_calculator/Gilmer-Thin.otf') format('opentype');
+                    font-weight: normal;
+                    font-style: normal;
+                }
+                .gif-bottom-right {
+                    position: absolute;
+                    bottom: 10px;
+                    right: 10px;
+                    width: 170px; 
+                    z-index: -1; 
+                }
+                h1 {
+                    font-family: 'Gilmer';
+                    margin: 5px;
+                    border-radius: 3px;
+                    width: 90%;
+                } 
+                h2 {
+                    font-family: 'Gilmer';
+                }
+                h3 {
+                    font-family: 'Gilmer';
+                }
+                button {
+                    font-family: 'Gilmer';
+                    border-radius: 50px;
+                    font-size: 14px;
+                    padding: 9px 10px;
+                    background-color: #F7F5FF;
+                    color: #000;
+                    border: none;
+                    cursor: pointer;
+                }
+                label {
+                    font-family: 'Gilmer';
+                }
+                input[type="text"], input[type="number"] {
+                    font-family: 'Gilmer';
+                    font-size: 12px;
+                    width: 60%;
+                    padding: 11px;
+                    margin-bottom: 10px;
+                    border: 1px solid #F7F5FF;
+                    border-radius: 10px;
+                    width: 1400px; 
+                    background-color: rgba(255, 255, 255, 0.5); /* Adjusted to pure white with transparency */
+                }
+            </style>
+            <head>
+                <meta charset="UTF-8">
+                <title>DNA Sequence Generator</title>
+                <img src="da7a8ef32e993c6b6b854622aac0badc.gif" alt="Cool Animation" class="gif-bottom-right">
+            
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const addVariantButton = document.getElementById("addVariant");
+                        const generateButton = document.getElementById("generateSequences");
+                        const deleteButton = document.getElementById("deleteVariants");
+                        const variantsContainer = document.getElementById("variantsContainer");
+                        const outputContainer = document.getElementById("output");
+            
+                        deleteButton.addEventListener("click", deleteSelectedVariants);
+                        
+                        // Function to add a new variant sequence input with overlap
+                        addVariantButton.addEventListener("click", function() {
+                            const index = variantsContainer.children.length + 1;
+                            const div = document.createElement("div");
+                            div.classList.add("variant-container");
+                            div.innerHTML = `
+                                <div>
+                                    <input type="checkbox" id="checkbox${index}">
+                                    <label for="variantName${index}">Left Sequence Name ${index}:</label>
+                                    <input type="text" id="variantName${index}" name="variantName${index}"><br>
+                                    <label for="variantSequence${index}">Left Sequence ${index}:</label>
+                                    <input type="text" id="variantSequence${index}" name="variantSequence${index}"><br>
+                                    <label for="prefix${index}">Left Sequence 5' Prefix ${index}:</label>
+                                    <input type="text" id="prefix${index}" name="prefix${index}"><br>
+                                    <label for="overlapLength${index}">Left Nucleotides Overlap Length ${index}:</label>
+                                    <input type="number" id="overlapLength${index}" name="overlapLength${index}"><br><br>
+                                </div>
+                            `;
+                            variantsContainer.appendChild(div);
+                        });
+            
+                        // Generate sequences based on input
+                        generateButton.addEventListener("click", function() {
+                            const mainSequence = document.getElementById("mainSequence").value;
+                            const mainOverlap = parseInt(document.getElementById("mainOverlap").value);
+                            const mainSuffix = document.getElementById("mainSuffix").value;
+                            const sequences = [];
+            
+                            // Process each variant
+                            Array.from(variantsContainer.children).forEach((div, index) => {
+                                const variantName = document.getElementById(`variantName${index + 1}`).value || `Variant ${index + 1}`;
+                                const variantSequence = document.getElementById(`variantSequence${index + 1}`).value;
+                                const prefix = document.getElementById(`prefix${index + 1}`).value;
+                                const variantOverlap = parseInt(document.getElementById(`overlapLength${index + 1}`).value);
+            
+                                // Sequence 1.1: First 'X' characters from variant, then add prefix
+                                const part1 = prefix + variantSequence.substring(0, variantOverlap);
+                                const sequence1_1 = part1; // No main sequence interaction
+            
+                                // Sequence 1.2: Last 'X' characters from variant + first 'Y' characters from main, transform and reverse
+                                const part2 = variantSequence.substring(variantSequence.length - variantOverlap);
+                                const part3 = mainSequence.substring(0, mainOverlap);
+                                const sequence1_2 = transformAndReverse(part2 + part3);
+            
+                                // Sequence 2.1: Same as 1.2 without transformation
+                                const sequence2_1 = part2 + part3;
+            
+                                // Sequence 2.2: Last 'Y' characters from main + suffix, transform and reverse
+                                const part4 = mainSequence.substring(mainSequence.length - mainOverlap) + mainSuffix;
+                                const sequence2_2 = transformAndReverse(part4);
+            
+                                // Add to results
+                                sequences.push(`${variantName}: 5' Restriction Site: ${sequence1_1} (Tm: ${calculateTm(sequence1_1)}°C, GC: ${calculateGCContent(sequence1_1)}%)`);
+                                sequences.push(`${variantName}: 3' Overlap for leftS: ${sequence1_2} (Tm: ${calculateTm(sequence1_2)}°C, GC: ${calculateGCContent(sequence1_2)}%)`);
+                                sequences.push(`${variantName}: 5' Overlap for rightS: ${sequence2_1} (Tm: ${calculateTm(sequence2_1)}°C, GC: ${calculateGCContent(sequence2_1)}%)`);
+                                sequences.push(`${variantName}: 3' Restriction Site: ${sequence2_2} (Tm: ${calculateTm(sequence2_2)}°C, GC: ${calculateGCContent(sequence2_2)}%)`);
+                            });
+            
+                            // Display results
+                            outputContainer.innerHTML = sequences.join('<br>');
+            
+                                           // Display results with visualization
+                                           outputContainer.innerHTML = ""; // Clear previous results
+            
+                                           sequences.forEach((sequenceInfo, i) => {
+                                               if (i % 4 === 0) {
+                                                // New variant
+                    const variantName = sequenceInfo.split(":")[0];
+                    outputContainer.innerHTML += `<h3>${variantName}</h3>`;
+            
+                    // Visualize the main sequence and variant sequence with overlap
+                    const variantSequence = document.getElementById(`variantSequence${(i / 4) + 1}`).value;
+                    const variantOverlap = parseInt(document.getElementById(`overlapLength${(i / 4) + 1}`).value);
+                    visualizeSequences(mainSequence, variantSequence, variantOverlap); 
+                }
+            
+                outputContainer.innerHTML += sequenceInfo + "<br>"; // Display sequence info as before
+            });
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // Function to visualize the sequences with overlap highlighting
+            function visualizeSequences(mainSeq, variantSeq, overlap) {
+                const overlapStartMain = mainSeq.length - overlap;
+                const overlapStartVariant = variantSeq.length - overlap;
+            
+                const container = document.createElement('div');
+                container.classList.add('sequence-container');
+            
+                // Main Sequence
+                container.innerHTML += `<div class="sequence-label">Main Sequence:</div><div class="sequence">${mainSeq.substring(0, overlapStartMain)}<span style="background-color: yellow;">${mainSeq.substring(overlapStartMain)}</span></div>`;
+            
+                // Variant Sequence
+                container.innerHTML += `<div class="sequence-label">Variant Sequence:</div><div class="sequence"><span style="background-color: yellow;">${variantSeq.substring(overlapStartVariant)}</span>${variantSeq.substring(0, overlapStartVariant)}</div>`;
+            
+                outputContainer.appendChild(container); // Add the container to the output div
+                outputContainer.appendChild(document.createElement('br'));
+            }
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        });
+                        
+                        // Function to calculate GC content
+                        function calculateGCContent(sequence) {
+                            const gcCount = sequence.split('').filter(base => base === 'G' || base === 'C').length;
+                            return ((gcCount / sequence.length) * 100).toFixed(2); // To fixed 2 decimal places
+                }
+                        function calculateTm(sequence) {
+                    let gcCount = sequence.split('').filter(c => c === 'G' || c === 'C').length;
+                    let atCount = sequence.length - gcCount; // Assuming sequence only contains A, T, G, C
+                    return 4 * gcCount + 2 * atCount;
+                }
+            
+                        // Function to transform and reverse a sequence
+                        function transformAndReverse(sequence) {
+                            return sequence.split('').map(nucleotide => {
+                                switch (nucleotide) {
+                                    case 'A': return 'T';
+                                    case 'T': return 'A';
+                                    case 'G': return 'C';
+                                    case 'C': return 'G';
+                                    default: return nucleotide;
+                                }
+                            }).reverse().join('');
+                        }
+                    });
+            
+                                // Function to delete selected variants
+                                function deleteSelectedVariants() {
+                                    const variantContainers = variantsContainer.querySelectorAll('.variant-container'); 
+                                    variantContainers.forEach(container => {
+                                        const checkbox = container.querySelector('input[type="checkbox"]');
+                                        if (checkbox.checked) {
+                                            variantsContainer.removeChild(container);
+                                        }
+                                    });
+                                    reindexVariants();
+                                }
+                            
+                                // Function to re-index variants
+                                function reindexVariants() {
+                                    const variantContainers = variantsContainer.querySelectorAll('.variant-container');
+                                    variantContainers.forEach((div, index) => {
+                                        const newIndex = index + 1;
+                                        div.querySelectorAll('label, input').forEach(element => {
+                                            if (element.id) {
+                                                element.id = element.id.replace(/\d+/, newIndex);
+                                            }
+                                            if (element.htmlFor) {
+                                                element.htmlFor = element.htmlFor.replace(/\d+/, newIndex);
+                                            }
+                                            if (element.name) {
+                                                element.name = element.name.replace(/\d+/, newIndex);
+                                            }
+                                        });
+                                    });
+                                }
+                
+                </script>
+            </head>
+            <body>
+                <h1 style="font-family: 'Plumpelo'; font-size: 41px; color: #93C572;"> OE-PCR Primers Calculator</h1>
+                <h2 style="font-family: 'Gilmer' ;font-size: 14px; color: #000;">Welcome to the Overlap Extension Primers Calculator, the tool Rick Sanchez would invent if he was a geneticist and not too busy dodging the Galactic Federation! Sick of tedious experiment planning? Throw in your main sequence and let's get schwifty with DNA splicing! This tool whips up primer pairs to seamlessly fuse sequences—no scars, all science. Let's make your DNA work wonders!</h2>
+                <h3 style="font-family: 'Gilmer' ;font-size: 11px; color: #8dc6eb;">All sequences are generated in a 5'->3' direction. mT is calculated with Wallace Rule. </h3>
+                <button onclick="showPage('content2')">Go to EO-PCR with Primers only</button>
+                <br><br>
+                <form>
+                    <div id="variantsContainer"></div>
+                    <button type="button" id="addVariant">Add Variant Sequence</button>
+                    <button type="button" id="deleteVariants">Delete Selected Variants</button>
+                    <br><br>
+                    <label for="mainSequence">Sequence concatenated right:</label>
+                    <input type="text" id="mainSequence" name="mainSequence"><br><br>
+                    <label for="mainSuffix">Right Sequence 3' Suffix:</label>
+                    <input type="text" id="mainSuffix" name="mainSuffix"><br><br>
+                    <label for="mainOverlap">Right Nucleotides Overlap Length:</label>
+                    <input type="number" id="mainOverlap" name="mainOverlap"><br><br>
+                    <button type="button" id="generateSequences">Generate Sequences</button>
+                </form>
+                <h3>Generated Sequences:</h3>
+                <div id="output"></div>
+            </body>
+            </html></p>
+    </div>
+
+    <div id="content2" class="page">
+        <p><!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>EO-PCR with Primers only</title>
+                <style>
+                    .sequence-container {
+                        display: monospace; /* Align items horizontally */
+                        font-family: monospace; /* Use a fixed-width font for alignment */
+                    }
+                
+                    .sequence-label {
+                        width: 150px; /* Adjust as needed */
+                        text-align: right;
+                        padding-right: 10px; /* Space between label and sequence */
+                    }
+                
+                    .sequence {
+                        white-space: pre; /* Preserve spaces and newlines */
+                    }
+                    @font-face {
+                        font-family: 'Plumpelo';
+                        src: url('/Users/maria/Desktop/primer_calculator/Plumpelo-Thin.otf') format('opentype');
+                        font-weight: normal;
+                        font-style: normal;
+                    }
+                    @font-face {
+                        font-family: 'Gilmer';
+                        src: url('/Users/maria/Desktop/primer_calculator/Gilmer-Thin.otf') format('opentype');
+                        font-weight: normal;
+                        font-style: normal;
+                    }
+                    .gif-bottom-right {
+                        position: absolute;
+                        bottom: 10px;
+                        right: 10px;
+                        width: 100px; 
+                        z-index: -1; 
+                    }
+                    h1 {
+                        font-family: 'Gilmer';
+                        margin: 5px;
+                        border-radius: 3px;
+                        width: 90%;
+                    } 
+                    h2 {
+                        font-family: 'Gilmer';
+                    }
+                    h3 {
+                        font-family: 'Gilmer';
+                    }
+                    button {
+                        font-family: 'Gilmer';
+                        border-radius: 50px;
+                        font-size: 14px;
+                        padding: 9px 10px;
+                        background-color: #F7F5FF;
+                        color: #000;
+                        border: none;
+                        cursor: pointer;
+                    }
+                    label {
+                        font-family: 'Gilmer';
+                    }
+                    input[type="text"], input[type="number"] {
+                        font-family: 'Gilmer';
+                        font-size: 12px;
+                        width: 60%;
+                        padding: 11px;
+                        margin-bottom: 10px;
+                        border: 1px solid #F7F5FF;
+                        border-radius: 10px;
+                        width: 1400px; 
+                        background-color: rgba(255, 255, 255, 0.5); /* Adjusted to pure white with transparency */
+                    }
+                </style>
+            </head>
+            <body>
+                <h1 style="font-family: 'Plumpelo'; font-size: 41px; color: #93C572;">EO-PCR with Primers only</h1>
+                <button onclick="showPage('content1')">Go to OE-PCR Primers Calculator</button>
+                <br><br>
+                <img src="/Users/maria/Desktop/primer_calculator/DNA_orbit_animated_small.gif" alt="Cool Animation" class="gif-bottom-right">
+                <div>
+                    <label for="mainSequence2">Main Sequence:</label>
+                    <input type="text" id="mainSequence2" required>
+                </div>
+                <div>
+                    <label for="prefix2">Prefix 5':</label>
+                    <input type="text" id="prefix2" required>
+                </div>
+                <div>
+                    <label for="addSeq1">Additional Sequence 1:</label>
+                    <input type="text" id="addSeq1" required>
+                </div>
+                <div>
+                    <label for="suffix2">Suffix 3':</label>
+                    <input type="text" id="suffix2" required>
+                </div>
+                <div>
+                    <label for="addSeq2">Additional Sequence 2:</label>
+                    <input type="text" id="addSeq2" required>
+                </div>
+                <div>
+                    <label for="overlap52">Nucleotides Overlap 5' number:</label>
+                    <input type="number" id="overlap52" required>
+                </div>
+                <div>
+                    <label for="overlap32">Nucleotides Overlap 3' number:</label>
+                    <input type="number" id="overlap32" required>
+                </div>
+                <button onclick="generateSequences2()">Generate Sequences</button>
+
+                <div class="output">
+                    <h3>Results</h3>
+                    <p id="result1-2"></p>
+                    <p id="result2-2"></p>
+                </div>
+
+                <script>
+                    function calculateGCContent(sequence) {
+                        const gcCount = sequence.split('').filter(base => base === 'G' || base === 'C').length;
+                        return ((gcCount / sequence.length) * 100).toFixed(2);
+                    }
+
+                    function calculateTm(sequence) {
+                        let gcCount = sequence.split('').filter(c => c === 'G' || c === 'C').length;
+                        let atCount = sequence.length - gcCount;
+                        return 4 * gcCount + 2 * atCount;
+                    }
+
+                    function generateSequences2() {
+                        const mainSeq = document.getElementById('mainSequence2').value;
+                        const prefix = document.getElementById('prefix2').value;
+                        const addSeq1 = document.getElementById('addSeq1').value;
+                        const suffix = document.getElementById('suffix2').value;
+                        const addSeq2 = document.getElementById('addSeq2').value;
+                        const overlap5 = parseInt(document.getElementById('overlap52').value, 10);
+                        const overlap3 = parseInt(document.getElementById('overlap32').value, 10);
+
+                        const sequence1 = prefix + addSeq1 + mainSeq.substring(0, overlap5);
+                        const sequence2Part = mainSeq.substring(mainSeq.length - overlap3) + addSeq2 + suffix;
+
+                        const complementMap = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'};
+                        let sequence2 = '';
+                        for (let i = 0; i < sequence2Part.length; i++) {
+                            sequence2 += complementMap[sequence2Part[i]];
+                        }
+                        sequence2 = sequence2.split('').reverse().join('');
+
+                        const gcContent1 = calculateGCContent(sequence1);
+                        const gcContent2 = calculateGCContent(sequence2);
+                        const tm1 = calculateTm(sequence1);
+                        const tm2 = calculateTm(sequence2);
+
+                        document.getElementById('result1-2').textContent = `5' Primer: ${sequence1} (GC Content: ${gcContent1}%, Tm: ${tm1}°C)`;
+                        document.getElementById('result2-2').textContent = `3' Primer: ${sequence2} (GC Content: ${gcContent2}%, Tm: ${tm2}°C)`;
+                    }
+                </script>
+            </body>
+            </html></p>
+    </div>
+
+    <script>
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
+                    
