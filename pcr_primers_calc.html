@@ -438,15 +438,15 @@
 
                     function generateSequences2() {
                         const mainSeq = document.getElementById('mainSequence2').value;
-                        const prefix = document.getElementById('prefix2').value;
+                        const prefix2 = document.getElementById('prefix2').value;
                         const addSeq1 = document.getElementById('addSeq1').value;
-                        const suffix = document.getElementById('suffix2').value;
+                        const suffix2 = document.getElementById('suffix2').value;
                         const addSeq2 = document.getElementById('addSeq2').value;
                         const overlap5 = parseInt(document.getElementById('overlap52').value, 10);
                         const overlap3 = parseInt(document.getElementById('overlap32').value, 10);
 
-                        const sequence1 = prefix + addSeq1 + mainSeq.substring(0, overlap5);
-                        const sequence2Part = mainSeq.substring(mainSeq.length - overlap3) + addSeq2 + suffix;
+                        const sequence1 = prefix2 + addSeq1 + mainSeq.substring(0, overlap5);
+                        const sequence2Part = mainSeq.substring(mainSeq.length - overlap3) + addSeq2 + suffix2;
 
                         const complementMap = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'};
                         let sequence2 = '';
